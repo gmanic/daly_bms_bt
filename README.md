@@ -1,4 +1,4 @@
-Starting with dreadnought's py-module for the Daly BMS, I found some more snippets on commands and return codes. (thanks to the brave man at https://diysolarforum.com/threads/decoding-the-daly-smartbms-protocol.21898/)
+Starting with dreadnought's py-module for the Daly BMS, I found some more snippets on commands and return codes. (thanks to the brave man at https://diysolarforum.com/threads/decoding-the-daly-smartbms-protocol.21898/).
 I am far from having all of them implemented, and I likely will not implement all of them.
 As my plan is to use the BT capabilities on my BMS (4S-120A), I'll focus on certain functions.
 
@@ -15,6 +15,8 @@ Requirements are especially bleak for BT connectivity, paho for MQTT (and some m
 Structure is that daly_bms.py is implementing data functionallity, daly_bms_bluetooth.py is the connection layer to the BMS via bleak (via asyncio, hence this additional layer (extended to dreadnought's initial implementation).
 
 Data model is a little different to accomodate a clear (IMHO) MQTT structure, especially considering using more than one Daly SMART BMS.
+
+Certain response codes are untested, e.g. error codes of the BMS. I'm not going to intentionally trying to trigger those errors...
 
 I have no prior experience with python, nor asyncio programming, so bear with me. :)
 
