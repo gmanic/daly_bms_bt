@@ -1,0 +1,5 @@
+pyserial==3.5
+bleak==0.11.0
+paho-mqtt
+argparse
+json
