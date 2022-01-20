@@ -91,7 +91,7 @@ class DalyBMSConnection():
     async def _data_point(self, measurement, data):
         self.logger.debug(data)
         if not data:
-            logger.warning("failed to receive status on ", measurement)
+            logger.warning("failed to receive status on %s" % measurement)
             return
         point = [measurement,
                 self.mac_address,
@@ -121,6 +121,11 @@ async def main(con):
         await con._data_point("HardwareVersion", await con.bt_bms.get_hw_sw_version("Hardware"))
         await con._data_point("CellAlarmVoltages", await con.bt_bms.get_alarm_voltages("Cell"))
         await con._data_point("PackAlarmVoltages", await con.bt_bms.get_alarm_voltages("Pack"))
+        await con._data_point("DiffAlarmsTempVolt", await con.bt_bms.get_alarms_diff_temp_volt())
+        await con._data_point("LoadChargeAlarms", await con.bt_bms.get_alarms_load_charge())
+        await con._data_point("RatedNominals", await con.bt_bms.get_rated_nominals())
+        await con._data_point("BalanceSettings", await con.bt_bms.get_balance_settings())
+        await con._data_point("ShortShutdownAmpsInternalOhms", await con.bt_bms.get_short_shutdownamp_ohm())
 
         if con.last_data_received is None:
             logger.warning("Failed receive data")
