@@ -162,10 +162,6 @@ class DalyBMSBluetooth(DalyBMS):
         response_data = await self._read_request(cmd, max_responses=2)
         return super().get_hw_sw_version(response_data=response_data, hard_soft=hard_soft)
 
-#    async def get_sw_version(self):
-#        response_data = await self._read_request("62", max_responses=2)
-#        return super().get_software_version(response_data=response_data)
-
     async def get_mosfet_status(self):
         response_data = await self._read_request("93")
         return super().get_mosfet_status(response_data=response_data)
@@ -193,6 +189,26 @@ class DalyBMSBluetooth(DalyBMS):
     async def get_balancing_status(self):
         response_data = await self._read_request("97")
         return super().get_balancing_status(response_data=response_data)
+
+    async def get_alarms_diff_temp_volt(self):
+        response_data = await self._read_request("5e")
+        return super().get_alarms_diff_temp_volt(response_data=response_data)
+
+    async def get_alarms_load_charge(self):
+        response_data = await self._read_request("5b")
+        return super().get_alarms_load_charge(response_data=response_data)
+
+    async def get_rated_nominals(self):
+        response_data = await self._read_request("50")
+        return super().get_rated_nominals(response_data=response_data)
+
+    async def get_balance_settings(self):
+        response_data = await self._read_request("5f")
+        return super().get_balance_settings(response_data=response_data)
+
+    async def get_short_shutdownamp_ohm(self):
+        response_data = await self._read_request("60")
+        return super().get_short_shutdownamp_ohm(response_data=response_data)
 
     async def get_errors(self):
         response_data = await self._read_request("98")

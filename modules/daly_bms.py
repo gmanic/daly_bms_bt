@@ -375,8 +375,72 @@ class DalyBMS:
         if not response_data:
             return False
         version = response_data[0][1:] + response_data[1][1:]
-        data={
+        data = {
             "version": version.decode()
+        }
+        return data
+
+    def get_alarms_diff_temp_volt(self, response_data=None):
+        if not response_data:
+            response_data = self._read_request("5e")
+        if not response_data:
+            return False
+        parts = struct.unpack('>hhbbxx', response_data)
+        data = {
+            "alarm1cellvoltdiff": parts[0] / 1000,
+            "alarm2cellvoltdiff": parts[1] / 1000,
+            "alarm1tempdiff": parts[2],
+            "alarm2tempdiff": parts[3],
+        }
+        return data
+
+    def get_alarms_load_charge(self, response_data=None):
+        if not response_data:
+            response_data = self._read_request("5b")
+        if not response_data:
+            return False
+        parts = struct.unpack('>4h', response_data)
+        data = {
+            "alarm1chargeamperage": (30000 - parts[0]) / 10,
+            "alarm2chargeamperage": (30000 - parts[1]) / 10,
+            "alarm1loadamperage": (parts[2] - 30000) / 10,
+            "alarm2loadamperage": (parts[3] - 30000) / 10,
+        }
+        return data
+
+    def get_rated_nominals(self, response_data=None):
+        if not response_data:
+            response_data = self._read_request("50")
+        if not response_data:
+            return False
+        parts = struct.unpack('>ixxh', response_data)
+        data = {
+            "nominalratedcapacity": parts[0] / 1000,
+            "nominalcellvoltage": parts[1] / 1000,
+        }
+        return data
+
+    def get_balance_settings(self, response_data=None):
+        if not response_data:
+            response_data = self._read_request("5f")
+        if not response_data:
+            return False
+        parts = struct.unpack('>hhxxxx', response_data)
+        data = {
+            "balancestartvoltage": parts[0] / 1000,
+            "balanceacceptablediff": parts[1] / 1000,
+        }
+        return data
+
+    def get_short_shutdownamp_ohm(self, response_data=None):
+        if not response_data:
+            response_data = self._read_request("60")
+        if not response_data:
+            return False
+        parts = struct.unpack('>hhxxxx', response_data)
+        data = {
+            "balancestartvoltage": parts[0],
+            "balanceacceptablediff": parts[1] / 1000,
         }
         return data
 
