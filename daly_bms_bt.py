@@ -38,6 +38,10 @@ parser.add_argument("--mqtt-password",
                     help="Password to authenticate MQTT with", 
                     type=str,
                     default="")
+parser.add_argument("--mqtt-retain",
+                    help="Retain values in MQTT",
+                    type=bool,
+                    default=False)
 args = parser.parse_args()
 
 logger = get_logger(level='info')
@@ -53,28 +57,28 @@ if args.mqtt:
     mqtt_client.username_pw_set(args.mqtt_user, args.mqtt_password)
     mqtt_client.connect(args.mqtt_broker, port=args.mqtt_port)
 
-def mqtt_single_out(topic, data, retain=True):
+def mqtt_single_out(topic, data, retain=False):
     logger.info(f'Send data: {data} on topic: {topic}, retain flag: {retain}')
     mqtt_client.publish(topic, data, retain=retain)
 
-def mqtt_iterator(result, base=''):
+def mqtt_iterator(result, base='', retain=False):
     if base == '':
         base = "/" + result[0] + "/" + result[1]
         mqtt_single_out(f'{args.mqtt_topic}{base}/time', result[2])
     for key in result[3].keys():
         if type(result[3][key]) == dict:
             logger.info(f'Result dict: {base}')
-            mqtt_iterator(result[3][key], f'{base}/{key}')
+            mqtt_iterator(result[3][key], f'{base}/{key}', retain=retain)
         else:
             if type(result[3][key]) == list:
                 val = json.dumps(result[3][key])
             else:
                 val = result[3][key]
-            mqtt_single_out(f'{args.mqtt_topic}{base}/{key}', val)
+            mqtt_single_out(f'{args.mqtt_topic}{base}/{key}', val, retain)
 
 def print_result(result):
     if args.mqtt:
-        mqtt_iterator(result)
+        mqtt_iterator(result, '', args.mqtt_retain)
     else:
         print(json.dumps(result, indent=2))
 
