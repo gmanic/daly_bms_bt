@@ -330,9 +330,9 @@ class DalyBMS:
             response_data = self._read_request("97")
         if not response_data:
             return False
-        self.logger.info(response_data.hex())
+        self.logger.debug(response_data.hex())
         bits = bin(int(response_data.hex(), base=16))[2:].zfill(48)
-        self.logger.info(bits)
+        self.logger.debug(bits)
         cells = {}
         for cell in range(1, self.status["cells"] + 1):
             cells[cell] = bool(int(bits[cell * -1]))
@@ -346,6 +346,8 @@ class DalyBMS:
             response_data = self._read_request("98")
         if int.from_bytes(response_data, byteorder='big') == 0:
             return {"Error": "0"}
+        self.logger.debug("ErrorCode %s", response_data)
+        self.logger.debug("ErrorBits %s", bin(int(response_data.hex(), base=16))[2:].zfill(48))
         byte_index = 0
         errors = []
         for b in response_data:
@@ -439,8 +441,8 @@ class DalyBMS:
             return False
         parts = struct.unpack('>hhxxxx', response_data)
         data = {
-            "balancestartvoltage": parts[0],
-            "balanceacceptablediff": parts[1] / 1000,
+            "shutdownvoltage": parts[0],
+            "shutdownohms": parts[1] / 1000,
         }
         return data
 
