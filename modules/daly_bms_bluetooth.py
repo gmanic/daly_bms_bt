@@ -41,7 +41,13 @@ class DalyBMSBluetooth(DalyBMS):
         except:
             pass
         self.client = BleakClient(mac_address)
-        await self.client.connect()
+        self.logger.info("Bluetooth connecting")
+        try:
+            await self.client.connect()
+        except:
+            self.logger.debug("Bluetooth connection failed")
+            return False
+        self.logger.info("Bluetooth connected")
         await self.client.start_notify(17, self._notification_callback)
         await self.client.write_gatt_char(48, bytearray(b""))
 
