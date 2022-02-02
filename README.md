@@ -8,7 +8,8 @@ Configuration is via commandline hardcoded so far (especially the BT mac-address
 
 **daly_bms_bt.py** is the file to run, it'll show some help when called without the required BT mac_address to connect to. The MQTT arguments are also provided on the cmd-line, you can define a loop-wait in seconds, but be aware, that the Daly BT module goes to sleep if not used and neither load/charge are present after approx 1h of inactivity.
 
-Running daly_bms_bt.py will loop endlessly (until a fatal error or CTRL-C [always trying to cleanly shut down BT connection]). Results are currently printed (json) on STDOUT unless you configure MQTT. While this BT connection is active, you cannot connect to the BMS with any other app/PC on BT. I have not tried to connect via CAN/UART-485 at the same time.
+Running daly_bms_bt.py can loop endlessly (until a fatal error or CTRL-C [always trying to cleanly shut down BT connection]). Results are printed (json) on STDOUT unless you configure MQTT. In loop mode, BT is disconnected while waiting loop-wait-time. This enables a different app to connect to the BMS while the loop is in its scheduled pause. Error handling should retry to reconnect endlessly as long as the BT connection is not available.
+I have not tried to connect via CAN/UART-485 at the same time.
 
 Requirements are especially bleak for BT connectivity, paho for MQTT (and some more usually installed modules).
 
@@ -16,7 +17,7 @@ Structure is that daly_bms.py is implementing data functionallity, daly_bms_blue
 
 Data model is a little different to accomodate a clear (IMHO) MQTT structure, especially considering using more than one Daly SMART BMS.
 
-Certain response codes are untested, e.g. error codes of the BMS. I'm not going to intentionally trying to trigger those errors...
+Response codes for BMS' error codes are currently disabled, as they throw an error, have not fixed that, yet. I'm not going to intentionally trying to trigger those errors...
 
 I have no prior experience with python, nor asyncio programming, so bear with me. :)
 
