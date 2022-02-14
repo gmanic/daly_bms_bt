@@ -16,6 +16,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--bt", help="Use BT mac address [required]", type=str, required=True)
 parser.add_argument("--loop", help="Continious running, pause between loop runs in s, single run without argument",
                     type=int)
+parser.add_argument("--keep", help="Keep BT connection, instead of closing and reopening the BT connection with each run",
+                    action="store_true")
 parser.add_argument("--mqtt", help="Write output to MQTT", action="store_true")
 parser.add_argument("--mqtt-topic", 
                     help="MQTT topic to write to [default DalySmartBMS]", 
@@ -157,7 +159,8 @@ async def main(con):
             logger.debug("run done")
         else:
             logger.info("No connection made, waiting and retry")
-        await con.disconnect()
+        if not args.keep:
+            await con.disconnect()
         if args.loop:
             await asyncio.sleep(args.loop)
         else:
