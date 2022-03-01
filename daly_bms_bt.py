@@ -14,6 +14,7 @@ from modules import ERROR_CODES
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--bt", help="Use BT mac address [required]", type=str, required=True)
+parser.add_argument("--hci", help="Adapter to use for connection [default hci0]", type=str, default="hci0")
 parser.add_argument("--loop", help="Continious running, pause between loop runs in s, single run without argument",
                     type=int)
 parser.add_argument("--keep", help="Keep BT connection, instead of closing and reopening the BT connection with each run",
@@ -91,14 +92,16 @@ def print_result(result):
         print(json.dumps(result, indent=2))
 
 class DalyBMSConnection():
-    def __init__(self, mac_address, logger):
+    def __init__(self, mac_address, logger, adapter="hci0"):
         self.logger = logger
-        self.bt_bms = DalyBMSBluetooth(logger=logger)
+        self.adapter = adapter
         self.mac_address = mac_address
         self.last_data_received = None
+        self.bt_bms = DalyBMSBluetooth(self.mac_address, self.logger, self.adapter)
 
     async def connect(self):
-        await self.bt_bms.connect(mac_address=self.mac_address)
+        if not self.bt_bms.client.is_connected:
+            await self.bt_bms.connect()
 
     async def disconnect(self):
         if self.bt_bms.client.is_connected:
@@ -176,7 +179,7 @@ while args.loop or not received_data:
     if args.mqtt:
         logger.debug("MQTT connecting")
         mqtt_client.connect(args.mqtt_broker, port=args.mqtt_port)
-    con = DalyBMSConnection(mac_address, logger=logger)
+    con = DalyBMSConnection(mac_address, logger, args.hci)
     loop = asyncio.get_event_loop()
     asyncio.ensure_future(main(con))
     try:

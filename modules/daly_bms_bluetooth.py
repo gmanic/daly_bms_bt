@@ -7,7 +7,7 @@ from .logger import Logger
 
 
 class DalyBMSBluetooth(DalyBMS):
-    def __init__(self, request_retries=3, logger=None):
+    def __init__(self, mac_address, logger=None, adapter="hci0", request_retries=3):
         """
 
         :param request_retries: How often read requests should get repeated in case that they fail (Default: 3).
@@ -20,8 +20,11 @@ class DalyBMSBluetooth(DalyBMS):
         DalyBMS.__init__(self, request_retries=request_retries, address=8, logger=logger)
         self.client = None
         self.response_cache = {}
+        self.mac_address = mac_address
+        self.logger.info("Set up Bleak client, adapter %s" % adapter) 
+        self.client = BleakClient(self.mac_address, device=adapter, timeout=15)
 
-    async def connect(self, mac_address):
+    async def connect(self):
         """
         Open the connection to the Bluetooth device.
 
@@ -36,12 +39,11 @@ class DalyBMSBluetooth(DalyBMS):
             """
             open_blue = subprocess.Popen(["bluetoothctl"], shell=True, stdout=subprocess.PIPE,
                                          stderr=subprocess.STDOUT, stdin=subprocess.PIPE)
-            open_blue.communicate(b"disconnect %s\n" % mac_address.encode('utf-8'))
+            open_blue.communicate(b"disconnect %s\n" % self.mac_address.encode('utf-8'))
             open_blue.kill()
         except:
             pass
-        self.client = BleakClient(mac_address)
-        self.logger.info("Bluetooth connecting")
+        self.logger.info("Bluetooth connecting...")
         try:
             await self.client.connect()
         except:
