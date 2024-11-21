@@ -29,3 +29,9 @@ I cannot confirm, as of now, but keep the following in mind:
 - It seems like the Bluetooth BMS Module goes to sleep after 1 hour of inactivity (no load or charging), while the serial connection responds all the time. Sending a command via the serial interface wakes up the Bluetooth module.
 
 Keep in mind: no guarantees, use at your own risk & your mileage might vary.
+
+
+
+*+*+*+*+*+*
+
+As I stopped working on the repo long time ago (changed bms & setup), the repo will be archived
